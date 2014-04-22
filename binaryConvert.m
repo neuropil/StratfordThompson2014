@@ -131,7 +131,7 @@ switch batchToggle
                     imfosInvert = ~imfosThresh;
                     
                     namePiece = strsplit(fileName,'.');
-                    if chanUse == 1;
+                    if ci == 1;
                         saveName = strcat(namePiece{1},'_cfosBW.tif');
                     else
                         saveName = strcat(namePiece{1},'_betagalBW.tif');

@@ -2,17 +2,21 @@ function [binaryImages] = binaryConvert(imageSel, varargin)
 
 % warndlg('This function assumes that Red channel = cfos and Green channel = beta gal');
 
-narginchk(0,2);
+if nargin == 0
+    imageSel = 'both';
+end
 
 p = inputParser;
 validStrings = {'cfos','betagal','both'};
 p.addRequired('imageSel', @(x) ischar(x) && any(validatestring(x,validStrings)));
 p.addOptional('batchMode', false, @islogical);
+p.addOptional('standDev', 2, @(x) isnumeric(x) && isscalar(x) && ismember(x,[1, 2, 3])) 
 
 parse(p,imageSel,varargin{:})
 
 imageToggle = p.Results.imageSel;
 batchToggle = p.Results.batchMode;
+stdVal = p.Results.standDev;
 
 switch imageToggle
     
@@ -53,7 +57,7 @@ switch batchToggle
                 imInfo = regionprops(imMask,chanImage,'PixelValues');
                 imMean = mean(imInfo.PixelValues);
                 imStd = std(double(imInfo.PixelValues));
-                imThresh = imMean + (imStd*2);
+                imThresh = imMean + (imStd*stdVal);
                 imfosThresh = chanImage > imThresh;
                 imfosInvert = ~imfosThresh;
                 
@@ -78,7 +82,7 @@ switch batchToggle
             imInfo = regionprops(imMask,chanImage,'PixelValues');
             imMean = mean(imInfo.PixelValues);
             imStd = std(double(imInfo.PixelValues));
-            imThresh = imMean + (imStd*2);
+            imThresh = imMean + (imStd*stdVal);
             imfosThresh = chanImage > imThresh;
             imfosInvert = ~imfosThresh;
             
@@ -126,7 +130,7 @@ switch batchToggle
                     imInfo = regionprops(imMask,chanImage,'PixelValues');
                     imMean = mean(imInfo.PixelValues);
                     imStd = std(double(imInfo.PixelValues));
-                    imThresh = imMean + (imStd*2);
+                    imThresh = imMean + (imStd*stdVal);
                     imfosThresh = chanImage > imThresh;
                     imfosInvert = ~imfosThresh;
                     
@@ -151,7 +155,7 @@ switch batchToggle
                 imInfo = regionprops(imMask,chanImage,'PixelValues');
                 imMean = mean(imInfo.PixelValues);
                 imStd = std(double(imInfo.PixelValues));
-                imThresh = imMean + (imStd*2);
+                imThresh = imMean + (imStd*stdVal);
                 imfosThresh = chanImage > imThresh;
                 imfosInvert = ~imfosThresh;
                 

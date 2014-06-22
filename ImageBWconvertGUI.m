@@ -22,7 +22,7 @@ function varargout = ImageBWconvertGUI(varargin)
 
 % Edit the above text to modify the response to help ImageBWconvertGUI
 
-% Last Modified by GUIDE v2.5 21-Apr-2014 17:02:10
+% Last Modified by GUIDE v2.5 24-Apr-2014 20:46:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,6 +58,7 @@ handles.output = hObject;
 set(handles.convert,'Enable','off');
 set(handles.create,'Enable','off');
 set(handles.imageS,'Enable','off');
+set(handles.stdv,'Enable','off');
 set(handles.bimages,'Value',0);
 set(handles.simages,'Value',0);
 set(handles.message,'String','Select Batch Option');
@@ -90,7 +91,8 @@ set(handles.convert,'Enable','off');
 
 set(handles.message,'String','Working...');
 
-handles.binaryImages = binaryConvert(handles.selectionID, handles.bchoice);
+handles.binaryImages = binaryConvert(handles.selectionID, handles.bchoice,...
+    str2double(handles.selectionSTD));
 
 set(handles.message,'String','');
 
@@ -122,6 +124,8 @@ for iims = 1:length(imageNames);
 end
 
 set(handles.batchPanel,'Visible','on');
+set(handles.bimages,'Value',0);
+set(handles.simages,'Value',0);
 set(handles.create,'Enable','off');
     
 guidata(hObject, handles);
@@ -150,9 +154,6 @@ else
     set(handles.imageS,'Enable','off');
 end
 
-
-
-
 guidata(hObject, handles);
 
 
@@ -179,8 +180,8 @@ function batchPanel_SelectionChangeFcn(hObject, eventdata, handles)
 %	NewValue: handle of the currently selected object
 % handles    structure with handles and user data (see GUIDATA)
 
-set(handles.imageS,'Enable','on');
-set(handles.message,'String','Select Image Option');
+set(handles.stdv,'Enable','on');
+set(handles.message,'String','Select Number of StDevs');
 
 newVal = get(eventdata.NewValue,'Tag');
 
@@ -196,3 +197,42 @@ end
 set(handles.batchPanel,'Visible','off');
 
 guidata(hObject, handles);
+
+
+% --- Executes on selection change in stdv.
+function stdv_Callback(hObject, eventdata, handles)
+% hObject    handle to stdv (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns stdv contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from stdv
+
+sdsel = get(hObject,'Value');
+sdsels = cellstr(get(hObject,'String'));
+
+if sdsel == 1;
+    return
+else
+    handles.selectionSTD = sdsels{sdsel};
+    set(handles.imageS,'Enable','on');
+    set(handles.message,'String','Select Image Option');
+    set(handles.stdv,'Enable','off');
+end
+
+set(handles.imageS,'Enable','on');
+set(handles.message,'String','Select Image Option');
+
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function stdv_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to stdv (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
